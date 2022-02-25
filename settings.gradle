@@ -1,0 +1,22 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        maven {
+            url "https://anythink.jfrog.io/artifactory/android_sdk"
+        }
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        maven {
+            url "https://anythink.jfrog.io/artifactory/android_sdk"
+        }
+        mavenCentral()
+    }
+}
+rootProject.name = "TopOnAndroidDemo"
+include ':app'
