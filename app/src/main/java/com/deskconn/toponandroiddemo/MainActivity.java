@@ -2,20 +2,17 @@ package com.deskconn.toponandroiddemo;
 
 import static android.content.ContentValues.TAG;
 
-import static com.deskconn.toponandroiddemo.AppGlobals.TopOnAppID;
-import static com.deskconn.toponandroiddemo.AppGlobals.TopOnAppKey;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import android.util.Log;
-
+import com.anythink.banner.api.ATBannerListener;
+import com.anythink.banner.api.ATBannerView;
 import com.anythink.core.api.ATAdInfo;
-import com.anythink.core.api.ATSDK;
 import com.anythink.core.api.AdError;
-import com.anythink.core.api.DeviceInfoCallback;
-import com.anythink.interstitial.api.ATInterstitial;
-import com.anythink.interstitial.api.ATInterstitialListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,83 +21,54 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        System.out.println("tthere it is ");
-        ATSDK.setNetworkLogDebug(true);//The SDK log function is recommended to be turned on during the integration test phase, and must be turned off before going online
+        FrameLayout frameLayout = findViewById(R.id.frame);
 
-        Log.i(TAG, "TopOn SDK version: " + ATSDK.getSDKVersionName());//SDK version
-        System.out.println("tthere  " + ATSDK.getSDKVersionName());
+        ATBannerView mBannerView = new ATBannerView(MainActivity.this);
+        mBannerView.setPlacementId("b5baca41a2536f");
 
-        ATSDK.integrationChecking(getApplicationContext());//Check the integration status of the advertising platform
+        int width = getResources().getDisplayMetrics().widthPixels;//Set a width value, such as screen width
+        int height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-        ATSDK.init(getApplicationContext(), TopOnAppID, TopOnAppKey);//Initialize SDK
+        mBannerView.setLayoutParams(new FrameLayout.LayoutParams(width, height));
 
-
-        ATSDK.testModeDeviceInfo(this, new DeviceInfoCallback() {
+        frameLayout.addView(mBannerView);
+        mBannerView.setBannerAdListener(new ATBannerListener() {
             @Override
-            public void deviceInfo(String deviceInfo) {
-                System.out.println("tthere   " + deviceInfo);
-                Log.i(TAG, "deviceInfo: " + deviceInfo);
-            }
-        });
-
-
-        ATInterstitial mInterstitialAd = new ATInterstitial(this, "acaa8a8e-594b-4e5e-bacf-014bc8f49749");
-        mInterstitialAd.setAdListener(new ATInterstitialListener() {
-            @Override
-            public void onInterstitialAdLoaded() {
-                System.out.println("tthere loaded");
-                mInterstitialAd.show(MainActivity.this);
+            public void onBannerLoaded() {
             }
 
             @Override
-            public void onInterstitialAdLoadFail(AdError adError) {
-                System.out.println("tthere fail" + adError);
+            public void onBannerFailed(AdError adError) {
                 //Note: Do not perform the retry loading method ad in this callback, otherwise it will cause a lot of useless requests and may cause the application to run slowly
                 //AdError，please refer to https://docs.toponad.com/#/en-us/android/android_doc/android_test?id=aderror
-                Log.e(TAG, "onInterstitialAdLoadFail:" + adError.getFullErrorInfo());
+                Log.e(TAG, "onBannerFailed:" + adError.getFullErrorInfo());
             }
 
             @Override
-            public void onInterstitialAdClicked(ATAdInfo atAdInfo) {
-                System.out.println("tthere clicked");
+            public void onBannerClicked(ATAdInfo atAdInfo) {
             }
 
             @Override
-            public void onInterstitialAdShow(ATAdInfo atAdInfo) {
-                System.out.println("tthere clicked show " + atAdInfo);
+            public void onBannerShow(ATAdInfo atAdInfo) {
                 //ATAdInfo can distinguish between advertising platforms and obtain the advertising slot ID of the advertising platform, etc.
                 //please refer to https://docs.toponad.com/#/en-us/android/android_doc/android_access_doc?id=callback_info
             }
 
             @Override
-            public void onInterstitialAdClose(ATAdInfo atAdInfo) {
-                //It is recommended to call load in this callback to load the ads for the next ad display (No need to call isAdReady())
-                mInterstitialAd.load();
+            public void onBannerClose(ATAdInfo atAdInfo) {
             }
 
             @Override
-            public void onInterstitialAdVideoStart(ATAdInfo atAdInfo) {
+            public void onBannerAutoRefreshed(ATAdInfo atAdInfo) {
             }
 
             @Override
-            public void onInterstitialAdVideoEnd(ATAdInfo atAdInfo) {
-            }
-
-            @Override
-            public void onInterstitialAdVideoError(AdError adError) {
+            public void onBannerAutoRefreshFail(AdError adError) {
+                //AdError，please refer to https://docs.toponad.com/#/en-us/android/android_doc/android_test?id=aderror
+                Log.e(TAG, "onBannerAutoRefreshFail:" + adError.getFullErrorInfo());
             }
         });
 
-        findViewById(R.id.ad_button).setOnClickListener(view -> {
-            if (mInterstitialAd.isAdReady()) {
-                System.out.println("tthere is ready ");
-                mInterstitialAd.show(this);
-            } else {
-                System.out.println("tthere not ready ");
-                mInterstitialAd.load();
-            }
-
-        });
-
+        findViewById(R.id.ad_button).setOnClickListener(view -> mBannerView.loadAd());
     }
 }
