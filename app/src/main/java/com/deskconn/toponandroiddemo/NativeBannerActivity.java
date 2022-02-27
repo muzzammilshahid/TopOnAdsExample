@@ -1,11 +1,12 @@
 package com.deskconn.toponandroiddemo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.anythink.core.api.ATAdInfo;
 import com.anythink.nativead.banner.api.ATNativeBannerConfig;
@@ -16,7 +17,7 @@ import com.anythink.nativead.banner.api.ATNativeBannerView;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NativeBannerActivity extends Activity {
+public class NativeBannerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
